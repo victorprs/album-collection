@@ -8,6 +8,8 @@ var pool = mysql.createPool(dbConfig);
 
 var app = express();
 
+app.use(express.json());
+
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, 'client', 'views', 'index.html'));
 });
@@ -31,6 +33,70 @@ app.get('/discos', function(req, res) {
             if (!err)
                 res.json(rows);
         });
+    
+        con.on('error', function(err) {
+            console.log(err);
+            res.json({'code' : 100, 'status': 'Error in connection db'});
+            return;
+        })
+    })
+})
+
+app.get('/generos', function(req, res) {
+    pool.getConnection(function (err, con) {
+        if (err) {
+            con.release();
+            res.json({'code' : 100, 'status': 'Error in connection db'});
+            return;
+        }
+
+        con.query('select ID as idGenero, NOME as nome from GENERO;', function(err, rows) {
+            con.release()
+            if (!err)
+                res.json(rows);
+        });
+    
+        con.on('error', function(err) {
+            console.log(err);
+            res.json({'code' : 100, 'status': 'Error in connection db'});
+            return;
+        })
+    })
+})
+
+
+app.post('/salvarDisco', function(req, res) {
+    pool.getConnection(function (err, con) {
+        if (err) {
+            con.release();
+            res.json({'code' : 100, 'status': 'Error in connection db'});
+            return;
+        }
+
+        console.log(req.body);
+
+        if (req.body.id == 0 || req.body.id === undefined) {
+            con.query('INSERT INTO ARTISTA (NOME) VALUES (?)', [req.body.artista], function(err, results) {
+                if (!err) {
+                    con.query('INSERT INTO ALBUM (NOME, ANO_LANCAMENTO, ID_ARTISTA) VALUES (?, ?, ?)',
+                            [req.body.nome, req.body.ano, results.insertId], function (err, results) {
+                                if (!err) {
+
+                                    req.body.genero.forEach(genero => {
+                                        con.query('INSERT INTO GENEROS_DO_ALBUM VALUES (?, ?)', [genero.idGenero, results.insertId], function(err, results) {
+                                            if (!err) 
+                                                res.send({'code':200, 'status':'success'});
+                                                return;
+                                        })
+                                    });
+                                }
+                            })
+                }
+                con.release()
+            });
+        } else {
+
+        }
     
         con.on('error', function(err) {
             console.log(err);
