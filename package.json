@@ -1,0 +1,28 @@
+{
+  "name": "album-collection",
+  "version": "1.0.0",
+  "description": "A web app for cataloguing album collections",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victorprs/album-collection.git"
+  },
+  "keywords": [
+    "album",
+    "collection"
+  ],
+  "author": "Victor Peres",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/victorprs/album-collection/issues"
+  },
+  "homepage": "https://github.com/victorprs/album-collection#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "mysql": "^2.15.0"
+  }
+}
